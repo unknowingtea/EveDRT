@@ -268,22 +268,21 @@ public class DataSource {
         System.err.println("Fetching item types");
         TypeMapAssembler typeMapAssembler = new TypeMapAssembler(typeMap, client);
         // split type ID fetch into multiple parts so we can periodically save to cache
-        /*
-        int numTypes = 0;
+        int completedTypes = 0;
         List<Integer> idList = new ArrayList<>();
+        int typesCount = marketOrders.getAllTypeIds().size();
         for (int curId : marketOrders.getAllTypeIds()) {
             idList.add(curId);
-            numTypes++;
-            if (numTypes == 100) {
+            completedTypes++;
+            if (completedTypes % 500 == 0) {
                 typeMapAssembler.assemble(idList);
                 writeTypeCache();
-                numTypes = 0;
                 idList.clear();
+                System.err.println("types remaining: " + (typesCount - completedTypes));
             }
         }
         typeMapAssembler.assemble(idList);
-        */
-        typeMapAssembler.assemble(marketOrders.getAllTypeIds());
+
         writeTypeCache();
 
     }

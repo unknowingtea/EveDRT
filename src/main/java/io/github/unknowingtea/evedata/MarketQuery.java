@@ -9,13 +9,13 @@ public class MarketQuery {
 
     public Set<String> stationNames = new HashSet<>();
 
-    public int historyPeriodDays;
+    public int historyPeriodDays = 30;
 
     public Set<Integer> filteredMarketGroups = new HashSet<>();
     public Set<Integer> filteredItemTypes = new HashSet<>();
-    public double maxDaysRemaining;
-    public double minSalesPerDay;
-    public double maxJitaPrice;
+    public double maxDaysRemaining = 7;
+    public double minSalesPerDay = 0.05;
+    public double maxJitaPrice = Double.POSITIVE_INFINITY;
 
-    public double scamPriceMultiple;
+    public double scamPriceMultiple = 3.0;
 }

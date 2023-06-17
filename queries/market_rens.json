@@ -1,0 +1,30 @@
+
+{
+  "regionName" : "Heimatar",
+  "stationNames" : ["Rens VI - Moon 8 - Brutor Tribe Treasury"],
+  "historyPeriodDays" : 30,
+  "filteredMarketGroups" :
+  [
+      492
+    , 1109
+    , 23
+    , 2480
+    , 1922
+    , 1663
+    , 1661
+    , 1954
+    , 150
+    , 2202
+    , 475
+    , 2
+    , 20
+  ],
+
+  "maxDaysRemaining" : 7,
+  "minSalesPerDay" : 0.05,
+  "maxJitaPrice" : 200000000,
+  "scamPriceMultiple" : 3
+
+}
+
+
