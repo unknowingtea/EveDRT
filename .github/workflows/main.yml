@@ -13,8 +13,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - run: mvn --batch-mode --update-snapshots install
-      - run: mkdir staging && cp target/*.jar staging
+      - run: mkdir release && cp target/*.jar staging
       - uses: actions/upload-artifact@v3
         with:
-          name: Package
-          path: staging
+          name: EveDRT
+          path: release
