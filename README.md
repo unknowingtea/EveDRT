@@ -22,5 +22,7 @@ Token refresh is not yet implemented, so authentication will only last for a sho
 
 You can execute a query by passing arguments `query <filename>` where <filename> is the path to a json file containing the query.
 
-#### Market Report
+#### Market Query
+
+For now, the only supported query is the market query that produces a market report. See the example query file in the `queries` directory.
 
