@@ -24,5 +24,22 @@ You can execute a query by passing arguments `query <filename>` where <filename>
 
 #### Market Query
 
-For now, the only supported query is the market query that produces a market report. See the example query file in the `queries` directory. 
+For now, the only supported query is the market query that produces a market report. This query type is used to examine the market in a player-owned structure. NPC structures are not supported. See the example query file in the `queries` directory. 
 
+## Troubleshooting
+
+### I get an error like "Bad Gateway"
+
+Let the run complete and then run it again. The program doesn't automatically retry, but manually trying again will likely fix it. 
+
+### The program hangs and keeps printing something like "calls remaining: 1"
+
+Kill it and start it again. 
+
+### The program takes a long time to run
+
+Some items take a long time to download, but they are cached, so it should be faster next time. When you first run the program, it has to download information about all the types, and this can take 20-30 minutes. Fortunately, you only have to do this once. Downloading market history also takes a long time, but it is cached for a few days.
+
+### Information about some item types is wrong
+
+Item data is downloaded and kept forever. It will only be wrong after an update to the game that changes item attributes. When this happens, you need to manually delete the file 'cache/dataCache/types.json'.  
