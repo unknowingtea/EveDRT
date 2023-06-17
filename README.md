@@ -24,5 +24,5 @@ You can execute a query by passing arguments `query <filename>` where <filename>
 
 #### Market Query
 
-For now, the only supported query is the market query that produces a market report. See the example query file in the `queries` directory.
+For now, the only supported query is the market query that produces a market report. See the example query file in the `queries` directory. 
 

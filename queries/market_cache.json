@@ -1,7 +1,7 @@
 
 {
-  "regionName" : "Heimatar",
-  "stationNames" : ["Rens VI - Moon 8 - Brutor Tribe Treasury"],
+  "regionName" : "Cache",
+  "stationNames" : ["System - My Structure Name"],
   "historyPeriodDays" : 30,
   "filteredMarketGroups" :
   [

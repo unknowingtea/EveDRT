@@ -1,6 +1,7 @@
 package io.github.unknowingtea.evedata;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class MarketQuery {
@@ -18,4 +19,6 @@ public class MarketQuery {
     public double maxJitaPrice = Double.POSITIVE_INFINITY;
 
     public double scamPriceMultiple = 3.0;
+
+    public Integer maxItemTypes = null;
 }

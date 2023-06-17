@@ -46,12 +46,7 @@ public class Main {
 
     private static void doAuth() throws Exception {
 
-        EveAuth auth = new EveAuth();
-        auth.authorize();
-        String authResponse = auth.getResponse();
-        PrintWriter out = new PrintWriter(new FileWriter("auth.json"));
-        out.println(authResponse);
-        out.close();
+        DataSource.doAuth();
     }
 
     private static void printUsage() {

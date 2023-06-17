@@ -47,12 +47,15 @@ public class MarketReport {
         Optional<Set<Long>> jitaIdOpt = Optional.of(jitaIdSet);
         ProcessingUtil.sortFilterOrders(System.out, jitaIdOpt, jitaIdOpt, allOrders, sellOrdersByType, buyOrdersByType);
 
-        Set<Integer> allTypeIds = new HashSet<>();
+        Collection<Integer> allTypeIds = new HashSet<>();
         allTypeIds.addAll(data.getAllTypeIds());
 
         Map<Long, StructureOrders> localOrders = new HashMap<>();
         for (String curStationName : marketQuery.stationNames) {
-            long structureId = data.getStructureIdByName(curStationName);
+            Long structureId = data.getStructureIdByName(curStationName);
+            if (structureId == null) {
+                throw new RuntimeException("No structure named: \"" + curStationName + "\" in " + marketQuery.regionName);
+            }
             StructureOrders orders = data.loadStructureOrders(structureId);
             allTypeIds.addAll(orders.getAllTypeIds());
             localOrders.put(structureId, orders);
@@ -63,12 +66,22 @@ public class MarketReport {
 
         int regionId = data.getRegionMap().getByName(marketQuery.regionName).getRegionId();
         System.err.println("Loading market history for region: " + marketQuery.regionName);
+        if (marketQuery.maxItemTypes != null) {
+            List<Integer> smallerTypeIds = new ArrayList<>();
+            int numToAdd = marketQuery.maxItemTypes;
+            int numAdded = 0;
+            for(int curId : allTypeIds) {
+                if (numAdded < numToAdd) {
+                    smallerTypeIds.add(curId);
+                    numAdded++;
+                }
+            }
+            allTypeIds = smallerTypeIds;
+        }
         int numTypes = allTypeIds.size();
         System.err.println("number of type ids: " + numTypes);
         data.loadMarketHistory(regionId, allTypeIds);
 
-        Map<Integer, Integer> maxSellByItem = new HashMap<>();
-        Map<Integer, Double> sellPriceByType = new HashMap<>();
         Map<Integer, Double> jita5pPriceByType = new HashMap<>();
         List<MarketReportType> report = new ArrayList<>();
         for(int curId: allTypeIds) {

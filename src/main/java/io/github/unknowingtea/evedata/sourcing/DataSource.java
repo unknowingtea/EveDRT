@@ -9,18 +9,23 @@ import io.swagger.client.api.UniverseApi;
 import io.swagger.client.model.*;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
 public class DataSource {
 
-    private final String AUTH_FILENAME = "auth.json";
+    private static final String AUTH_FILENAME = "auth.json";
+    private static final String API_CACHE_DIRNAME = "apiCache";
     private Optional<String> accessToken = Optional.empty();
-    private final String TYPES_FILENAME = "types.json";
-    private final String HISTORY_FILENAME = "marketHistory";
-    private final String cachePath = "dataCache";
+    private static final String TYPES_FILENAME = "types.json";
+    private static final String HISTORY_DIRNAME = "marketHistory";
+    private static final String LOCAL_CACHE_DIRNAME = "dataCache";
+    
+    private static final String ALL_CACHE_DIRNAME = "cache";
     private Set<String> regionNames = null;
 
     private RegionMap regionMap = null;
@@ -32,21 +37,44 @@ public class DataSource {
 
     public DataSource() throws IOException {
 
-        File authFile = new File(AUTH_FILENAME);
+        File authFile = new File(getAuthFilePath());
         if (authFile.exists()) {
-            String authJson = new String(Files.readAllBytes(Paths.get(AUTH_FILENAME)));
+            String authJson = new String(Files.readAllBytes(Paths.get(getAuthFilePath())));
             ObjectMapper mapper = new ObjectMapper();
             Map<String, String> authMap = mapper.readValue(authJson, Map.class);
             this.accessToken = Optional.of(authMap.get("access_token"));
         }
 
-        File cacheDir = new File(cachePath);
+        File cacheDir = new File(getApiCachePath());
         if (!cacheDir.exists()) {
             cacheDir.mkdir();
         }
 
         typeMap = readTypeCache();
 
+    }
+
+    private static void mkDirs() {
+        File allCacheDir = new File(ALL_CACHE_DIRNAME);
+        if (!allCacheDir.exists()) {
+            allCacheDir.mkdir();
+        }
+    }
+
+    public static void doAuth() throws Exception {
+
+        mkDirs();
+
+        EveAuth auth = new EveAuth();
+        auth.authorize();
+        String authResponse = auth.getResponse();
+        PrintWriter out = new PrintWriter(new FileWriter(getAuthFilePath()));
+        out.println(authResponse);
+        out.close();
+    }
+
+    private static String getApiCachePath() {
+        return ALL_CACHE_DIRNAME + File.separator + API_CACHE_DIRNAME;
     }
 
     public RegionMap getRegionMap() {
@@ -57,7 +85,7 @@ public class DataSource {
         return typeMap.allTypeIds();
     }
     private TypeMap readTypeCache() throws IOException {
-        String path = cachePath + File.separator + TYPES_FILENAME;
+        String path = getTypesCachePath();
         if (new File(path).exists()) {
             return Util.readJson(path, TypeMap.class);
         } else {
@@ -65,26 +93,35 @@ public class DataSource {
         }
     }
 
+    private static final String getLocalCachePath() {
+        return ALL_CACHE_DIRNAME + File.separator + LOCAL_CACHE_DIRNAME;
+    }
+    private static final String getTypesCachePath() {
+        return getLocalCachePath() + File.separator + TYPES_FILENAME;
+    }
+
+    private static final String getAuthFilePath() {
+        return ALL_CACHE_DIRNAME + File.separator + AUTH_FILENAME;
+    }
+
+    private static final String getHistoryCachePath() {
+        return getLocalCachePath() + File.separator + HISTORY_DIRNAME;
+    }
+
     private void writeTypeCache() throws IOException {
-        String path = cachePath + File.separator + TYPES_FILENAME;
+        String path = getTypesCachePath();
         Util.writeJson(path, typeMap);
     }
 
-    /*
-    public double getSellVolumePerDay(int region, int typeId) {
-        return marketHistory.getSellVolumePerDay(region, typeId);
-    }
-     */
-
     public void loadMarketHistory(int regionId, Collection<Integer> typeIds) throws ApiException, IOException {
-        String path = cachePath + File.separator + HISTORY_FILENAME;
+        String path = getHistoryCachePath();
         ApiClient client = newApiClient();
         MarketHistoryAssembler historyAssembler = new MarketHistoryAssembler(path, client);
         historyAssembler.assemble(regionId, typeIds);
     }
 
     public HistoricalOrderStats getTradeHistory(int historyPeriodDays, int regionId, int typeId) throws IOException {
-        String path = cachePath + File.separator + HISTORY_FILENAME;
+        String path = getHistoryCachePath();
         ApiClient client = newApiClient();
         MarketHistoryAssembler historyAssembler = new MarketHistoryAssembler(path, client);
         return historyAssembler.getTradeHistory(historyPeriodDays, regionId, typeId);
@@ -164,51 +201,6 @@ public class DataSource {
         history.add(order);
     }
 
-    /*
-    private MarketHistory computeMarketHistory(String path) throws IOException {
-        MarketHistory result = new MarketHistory(7);
-        BufferedReader in = new BufferedReader(new FileReader(path));
-
-        String line = in.readLine();
-        StringTokenizer tok = new StringTokenizer(line, ";");
-        List<String> columns = new ArrayList<String>();
-        while(tok.hasMoreTokens()) {
-            columns.add(tok.nextToken());
-        }
-        line = in.readLine();
-        while (line != null) {
-
-            tok = new StringTokenizer(line, ";");
-            Map<String, String> rawEntry = new HashMap<>();
-            int columnIndex = 0;
-            while(tok.hasMoreTokens()) {
-                rawEntry.put(columns.get(columnIndex), tok.nextToken());
-                columnIndex++;
-            }
-            addRawEntry(result, rawEntry);
-
-            line = in.readLine();
-        }
-
-        return result;
-    }
-    private void loadMarketHistory() throws IOException {
-        String bulkDataPath = "bulkData";
-        String weeklyTradesFilename = "marketOrderTrades_weekly.csv";
-        String tradeStatsFilename = "tradeStats.json";
-
-        String tradeStatsPath = bulkDataPath + File.separator + tradeStatsFilename;
-        File tradeStatsFile = new File(tradeStatsPath);
-        if(tradeStatsFile.exists()) {
-            marketHistory = Util.readJson(tradeStatsPath, MarketHistory.class);
-        } else {
-            marketHistory = computeMarketHistory(bulkDataPath + File.separator + weeklyTradesFilename);
-            Util.writeJson(tradeStatsPath, marketHistory);
-        }
-
-    }
-    */
-
     public int getRegionBySystemId(int systemId) throws ApiException {
         ApiClient client = newApiClient();
         UniverseApi universe = new UniverseApi(client);
@@ -219,7 +211,7 @@ public class DataSource {
 
     private ApiClient newApiClient() {
         ApiClient client = new ApiClient();
-        File cacheDir = new File("apiCache");
+        File cacheDir = new File(getApiCachePath());
         long cacheSize = 50L * 1024L * 1024L;
         client.getHttpClient().setCache(new Cache(cacheDir, cacheSize));
         if (accessToken.isPresent()) {
