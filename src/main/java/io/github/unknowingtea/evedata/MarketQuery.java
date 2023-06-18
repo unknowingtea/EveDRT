@@ -6,6 +6,7 @@ import java.util.Set;
 
 public class MarketQuery {
 
+    public String filePrefix = null;
     public String regionName;
 
     public Set<String> stationNames = new HashSet<>();

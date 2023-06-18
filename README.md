@@ -8,13 +8,13 @@ EveDRT is a Java application that runs on your computer. You will need to have a
 
 ## Installing and Running
 
-To install, download the .jar file from the latest build and put it anywhere. It is best to put the file in its own directory, because EveDRT will use its working directory to cache data and store other information.
+To install, download the .jar file from the latest release and put it anywhere. It is best to put the file in its own directory, because EveDRT will use its working directory to cache data and store other information.
 
 To run, open a shell/terminal in the directory where you put the .jar file. Then run `java -jar evedrt.jar <args>` replacing <args> with program arguments as described below.
 
 ### Authenticating
 
-If you are using EveDRT to acces information that is not available to all Eve characters, then you will need to authenticate. To do this, pass `auth` as the only argument. The program will print instructions on how to sign in to the official Eve Online site using your browser. 
+If you are using EveDRT to access information that is not available to all Eve characters, then you will need to authenticate. To do this, pass `auth` as the only argument. The program will print instructions on how to sign in to the official Eve Online site using your browser. 
 
 Token refresh is not yet implemented, so authentication will only last for a short while. It is best to authenticate before each query.
 

@@ -27,7 +27,11 @@ public class MarketReport {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         String date = simpleDateFormat.format(new Date());
         String region = marketQuery.regionName.toLowerCase().replace(' ', '_');
-        String filename = "market_" + region + "_" + date + ".csv";
+        String filePrefix = "market_" + region + "_";
+        if (marketQuery.filePrefix != null) {
+            filePrefix = marketQuery.filePrefix + "_";
+        }
+        String filename = filePrefix + date + ".csv";
         write(data, marketQuery, report, filename);
         return report;
     }

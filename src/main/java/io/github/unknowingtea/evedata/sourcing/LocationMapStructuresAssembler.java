@@ -36,7 +36,6 @@ public class LocationMapStructuresAssembler {
                     locationMap.add(curId, ok);
                 } catch (ApiException ex) {
                     // expected: unauthorized
-                    ex.printStackTrace();
                 }
             }
         }

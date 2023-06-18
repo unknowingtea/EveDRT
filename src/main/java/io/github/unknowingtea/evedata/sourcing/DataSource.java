@@ -37,6 +37,8 @@ public class DataSource {
 
     public DataSource() throws IOException {
 
+        mkDirs();
+
         File authFile = new File(getAuthFilePath());
         if (authFile.exists()) {
             String authJson = new String(Files.readAllBytes(Paths.get(getAuthFilePath())));
@@ -59,6 +61,12 @@ public class DataSource {
         if (!allCacheDir.exists()) {
             allCacheDir.mkdir();
         }
+
+        File localCacheDir = new File(getLocalCachePath());
+        if (!localCacheDir.exists()) {
+            localCacheDir.mkdir();
+        }
+
     }
 
     public static void doAuth() throws Exception {
