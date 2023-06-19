@@ -5,7 +5,7 @@
   <artifactId>evedrt</artifactId>
   <packaging>jar</packaging>
   <name>evedrt</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <url>https://github.com/unknowingtea/evedrt</url>
   <description>Eve Online data and reporting tool</description>
   <prerequisites>

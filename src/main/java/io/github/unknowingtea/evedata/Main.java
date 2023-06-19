@@ -30,6 +30,17 @@ public class Main {
             }
 
             String filename = args[argIndex++];
+
+            while(argIndex < args.length) {
+                String curArg = args[argIndex++];
+                if (curArg.equals("--noApiCache")) {
+                    DataSource.useApiCache = false;
+                } else {
+                    printUsage();
+                    System.exit(1);
+                }
+            }
+
             doMarketQuery(filename);
         }
 
@@ -52,7 +63,7 @@ public class Main {
     private static void printUsage() {
         System.out.println("Usage:");
         System.out.println("auth");
-        System.out.println("query <queryFilename>");
+        System.out.println("query <queryFilename> [--noApiCache]");
     }
 
 }

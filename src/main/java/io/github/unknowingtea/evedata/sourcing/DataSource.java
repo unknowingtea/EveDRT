@@ -35,6 +35,8 @@ public class DataSource {
 
     private Optional<MarketGroupMap> marketGroupMap = Optional.empty();
 
+    public static boolean useApiCache = true;
+
     public DataSource() throws IOException {
 
         mkDirs();
@@ -219,9 +221,11 @@ public class DataSource {
 
     private ApiClient newApiClient() {
         ApiClient client = new ApiClient();
-        File cacheDir = new File(getApiCachePath());
-        long cacheSize = 50L * 1024L * 1024L;
-        client.getHttpClient().setCache(new Cache(cacheDir, cacheSize));
+        if (useApiCache) {
+            File cacheDir = new File(getApiCachePath());
+            long cacheSize = 50L * 1024L * 1024L;
+            client.getHttpClient().setCache(new Cache(cacheDir, cacheSize));
+        }
         if (accessToken.isPresent()) {
             client.addDefaultHeader("token", accessToken.get());
         }
