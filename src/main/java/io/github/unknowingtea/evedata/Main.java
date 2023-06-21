@@ -65,5 +65,4 @@ public class Main {
         System.out.println("auth");
         System.out.println("query <queryFilename> [--noApiCache]");
     }
-
 }

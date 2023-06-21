@@ -36,6 +36,10 @@ Let the run complete and then run it again. The program doesn't automatically re
 
 Kill it and start it again. 
 
+### I get an error like "failed to rename cache\apiCache\journal to cache\apiCache\journal.bkp"
+
+Try passing --noApiCache after the query filename.
+
 ### The program takes a long time to run
 
 Some items take a long time to download, but they are cached, so it should be faster next time. When you first run the program, it has to download information about all the types, and this can take 20-30 minutes. Fortunately, you only have to do this once. Downloading market history also takes a long time, but it is cached for a few days.
