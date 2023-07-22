@@ -20,8 +20,11 @@ import java.util.*;
 
 public class MarketReport {
 
-    public static List<MarketReportType> queryAndReport(DataSource data, MarketQuery marketQuery) throws IOException, ApiException {
-        List<MarketReportType> report = query(data, marketQuery);
+    public static List<MarketReportType> queryAndReport(DataSource data, MarketQuery marketQuery,
+        Optional<Map<Integer, List<GetMarketsRegionIdOrders200Ok>>> sellOrdersByTypeOpt,
+                                                        Optional<Map<Integer, Double>> jita5pPriceByTypeOpt,
+                                                        Optional<PricePredicate> pricePredicateOpt) throws IOException, ApiException {
+        List<MarketReportType> report = query(data, marketQuery, sellOrdersByTypeOpt, jita5pPriceByTypeOpt, pricePredicateOpt);
 
         String pattern = "ddMMMyyyy";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -36,15 +39,20 @@ public class MarketReport {
         return report;
     }
 
-    public static List<MarketReportType> query(DataSource data, MarketQuery marketQuery) throws IOException, ApiException {
+    public static List<MarketReportType> query(DataSource data, MarketQuery marketQuery,
+                                               Optional<Map<Integer, List<GetMarketsRegionIdOrders200Ok>>> sellOrdersByTypeOpt,
+                                               Optional<Map<Integer, Double>> jita5pPriceByTypeOpt,
+                                               Optional<PricePredicate> pricePredicateOpt) throws IOException, ApiException {
+
+        PricePredicate pricePredicate = pricePredicateOpt.orElse(new ScamPricePredicate(marketQuery.scamPriceMultiple));
 
         Set<String> regionNames = new HashSet<>();
         regionNames.add("The Forge");
         regionNames.add(marketQuery.regionName);
         data.loadMarketOrders(regionNames);
         Collection<GetMarketsRegionIdOrders200Ok> allOrders = data.getAllMarketOrders();
-        Map<Integer, List<GetMarketsRegionIdOrders200Ok>> sellOrdersByType = new HashMap<>();
         Map<Integer, List<GetMarketsRegionIdOrders200Ok>> buyOrdersByType = new HashMap<>();
+        Map<Integer, List<GetMarketsRegionIdOrders200Ok>> sellOrdersByType = sellOrdersByTypeOpt.orElse(new HashMap<>());
         long jitaId = data.getStationByName("Jita IV - Moon 4 - Caldari Navy Assembly Plant").getStationId();
         Set<Long> jitaIdSet = new HashSet<>();
         jitaIdSet.add(jitaId);
@@ -86,7 +94,7 @@ public class MarketReport {
         System.err.println("number of type ids: " + numTypes);
         data.loadMarketHistory(regionId, allTypeIds);
 
-        Map<Integer, Double> jita5pPriceByType = new HashMap<>();
+        Map<Integer, Double> jita5pPriceByType = jita5pPriceByTypeOpt.orElse(new HashMap<>());
         List<MarketReportType> report = new ArrayList<>();
         for(int curId: allTypeIds) {
             GetUniverseTypesTypeIdOk curType = data.getTypeById(curId);
@@ -119,7 +127,7 @@ public class MarketReport {
 
                     if (!curOrder.isIsBuyOrder()) {
                         lowestLocalSellPrice = Math.min(lowestLocalSellPrice, curOrder.getPrice());
-                        if (!ProcessingUtil.isScamPrice(marketQuery.scamPriceMultiple, curOrder.getPrice(), reportItem.jita5P_Price, history.getAveragePrice())
+                        if (pricePredicate.accept(curOrder.getPrice(), history.getAveragePrice(), reportItem.jita5P_Price, curType)
                         ) {
                             numForSale += curOrder.getVolumeRemain();
                         }
@@ -140,7 +148,7 @@ public class MarketReport {
 
             double daysRemaining = totalVolumeRemaining / reportItem.soldPerDay;
 
-            if (!ProcessingUtil.marketGroupIsFiltered(curType.getMarketGroupId(), marketQuery.filteredMarketGroups, marketGroupMap) &&
+            if (!ProcessingUtil.belongsToMarketGroup(curType.getMarketGroupId(), marketQuery.filteredMarketGroups, marketGroupMap) &&
                     !marketQuery.filteredItemTypes.contains(curType.getTypeId()) &&
                     Double.isFinite(daysRemaining) &&
                     daysRemaining < marketQuery.maxDaysRemaining &&

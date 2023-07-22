@@ -160,6 +160,10 @@ public class DataSource {
         return typeMap.getById(id);
     }
 
+    public GetUniverseTypesTypeIdOk getTypeByName(String name) {
+        return typeMap.getByName(name);
+    }
+
     public void loadMarketGroups() throws ApiException, IOException {
         if (!marketGroupMap.isPresent()) {
             MarketGroupMap newMap = new MarketGroupMap();
@@ -195,6 +199,12 @@ public class DataSource {
         }
 
         return set1.containsAll(set2) && set2.containsAll(set1);
+    }
+
+    public List<GetCharactersCharacterIdAssets200Ok> getCharacterAssets(int charId) throws ApiException, IOException {
+        PlayerAssetsAssembler assembler = new PlayerAssetsAssembler(newApiClient(), accessToken.get());
+        assembler.assemble(charId);
+        return assembler.getPlayerAssets().getByCharacterId(charId);
     }
 
     private void addRawEntry(MarketHistory history, Map<String, String> entry) {

@@ -79,7 +79,7 @@ public class ProcessingUtil {
 
     }
 
-    public static boolean marketGroupIsFiltered(Integer marketGroupId, Set<Integer> filteredMarketGroups, MarketGroupMap marketGroupMap) {
+    public static boolean belongsToMarketGroup(Integer marketGroupId, Set<Integer> marketGroups, MarketGroupMap marketGroupMap) {
 
         if (marketGroupId == null) {
             // some types have no market group?
@@ -90,13 +90,17 @@ public class ProcessingUtil {
             System.err.println("market group " + marketGroupId + " not found");
             return false;
         }
-        if (filteredMarketGroups.contains(curGroup.getMarketGroupId())) {
+        if (marketGroups.contains(curGroup.getMarketGroupId())) {
             return true;
         }
 
         while(curGroup.getParentGroupId() != null) {
             curGroup = marketGroupMap.get(curGroup.getParentGroupId());
-            if (filteredMarketGroups.contains(curGroup.getMarketGroupId())) {
+            if (curGroup == null) {
+                // parent group not in map?
+                return false;
+            }
+            if (marketGroups.contains(curGroup.getMarketGroupId())) {
                 return true;
             }
         }

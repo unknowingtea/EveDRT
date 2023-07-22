@@ -52,7 +52,7 @@ public class Main {
 
         MarketQuery query = Util.readJson(queryFilename, MarketQuery.class);
         DataSource data = new DataSource();
-        MarketReport.queryAndReport(data, query);
+        MarketReport.queryAndReport(data, query, Optional.empty(), Optional.empty(), Optional.empty());
     }
 
     private static void doAuth() throws Exception {

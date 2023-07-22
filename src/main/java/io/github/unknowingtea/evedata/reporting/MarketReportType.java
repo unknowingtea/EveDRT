@@ -23,6 +23,14 @@ public final class MarketReportType {
         return volumeRemaining.get(structureId);
     }
 
+    public long getTotalVolumeRemaining() {
+        long result = 0;
+        for (long curAmount : volumeRemaining.values()) {
+            result += curAmount;
+        }
+        return result;
+    }
+
     public void setLowestLocalSellPrice(long structureId, double price) {
         lowestLocalSellPrice.put(structureId, price);
     }

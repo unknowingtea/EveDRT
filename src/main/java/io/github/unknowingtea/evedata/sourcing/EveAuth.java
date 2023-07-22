@@ -31,7 +31,7 @@ public class EveAuth implements HttpHandler {
         String encodedCallback = URLEncoder.encode(callbackUri, StandardCharsets.UTF_8.toString());
         buf.append("&redirect_uri=" + encodedCallback);
         buf.append("&client_id=" + CLIENT_ID);
-        buf.append("&scope=esi-universe.read_structures.v1%20esi-markets.structure_markets.v1");
+        buf.append("&scope=esi-universe.read_structures.v1%20esi-markets.structure_markets.v1%20esi-assets.read_assets.v1");
         buf.append("&code_challenge_method=S256");
 
         SecureRandom rnd = new SecureRandom();
