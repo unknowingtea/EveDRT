@@ -207,6 +207,12 @@ public class DataSource {
         return assembler.getPlayerAssets().getByCharacterId(charId);
     }
 
+    public PlayerContracts getCharacterContracts(int charId) throws ApiException, IOException {
+        PlayerContractsAssembler assembler = new PlayerContractsAssembler(newApiClient(), accessToken.get());
+        assembler.assemble(charId);
+        return assembler.getPlayerContracts();
+    }
+
     private void addRawEntry(MarketHistory history, Map<String, String> entry) {
 
         int regionId = Integer.parseInt(entry.get("region_id"));
